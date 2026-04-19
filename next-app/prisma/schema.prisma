@@ -16,8 +16,7 @@ enum Role {
 model User {
   id          String      @id @default(cuid())
   handle      String      @unique
-  emailHash   String      @unique
-  domain      String
+  passwordHash String
   flair       String      @default("Anon")
   karma       Int         @default(0)
   role        Role        @default(USER)
@@ -31,7 +30,6 @@ model User {
   resolutions Flag[]      @relation("resolutions")
   modActions  ModAction[] @relation("actions")
 
-  @@index([domain])
   @@index([role])
 }
 
@@ -103,23 +101,6 @@ model Vote {
   thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
 
   @@id([userId, threadId])
-}
-
-model LoginCode {
-  id         String    @id @default(cuid())
-  emailHash  String
-  codeHash   String
-  createdAt  DateTime  @default(now())
-  expiresAt  DateTime
-  consumedAt DateTime?
-  ip         String?
-
-  @@index([emailHash])
-}
-
-model AllowedDomain {
-  domain String  @id
-  note   String?
 }
 
 model Flag {

@@ -560,13 +560,15 @@ hr.dotted { border: 0; border-top: 2px dotted var(--ink-soft); margin: 18px 0; }
 /* ---------- Submit form ---------- */
 .submit-form { margin-bottom: 24px; }
 
-.submit-tabs {
+.submit-tabs,
+.auth-tabs {
   display: flex;
   gap: 0;
   margin-bottom: -2px;
   position: relative;
   z-index: 1;
 }
+.auth-tabs .submit-tab { flex: 1; text-align: center; }
 .submit-tab {
   font-family: "Space Grotesk", sans-serif;
   font-weight: 700;

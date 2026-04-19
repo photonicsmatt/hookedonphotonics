@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { SEED_ALLOWED } from "../lib/domains";
 
 const prisma = new PrismaClient();
 
@@ -23,16 +22,7 @@ async function main() {
       create: c,
     });
   }
-
-  for (const domain of SEED_ALLOWED) {
-    await prisma.allowedDomain.upsert({
-      where: { domain },
-      update: {},
-      create: { domain, note: "seed" },
-    });
-  }
-
-  console.log(`Seeded ${CHANNELS.length} channels and ${SEED_ALLOWED.length} domains.`);
+  console.log(`Seeded ${CHANNELS.length} channels.`);
 }
 
 main()

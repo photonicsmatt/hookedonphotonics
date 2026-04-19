@@ -1,8 +1,7 @@
-import crypto from "node:crypto";
+import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { getIronSession, IronSession, SessionOptions } from "iron-session";
 import { prisma } from "./db";
-import { domainOf, isBlockedDomain, isEduDomain, SEED_ALLOWED } from "./domains";
 
 export type Session = {
   userId?: string;
@@ -31,7 +30,6 @@ export async function currentUser() {
   const user = await prisma.user.findUnique({ where: { id: session.userId } });
   if (!user) return null;
   if (user.bannedAt) {
-    // Banned users shouldn't carry a live session.
     session.destroy();
     return null;
   }
@@ -51,66 +49,39 @@ export function isMod(user: { role: string } | null | undefined): boolean {
   return !!user && (user.role === "MOD" || user.role === "ADMIN");
 }
 
-// ---- hashing helpers ----
+// ---- handle + password helpers ----
 
-export function hashEmail(email: string): string {
-  const normalized = email.trim().toLowerCase();
-  const pepper = process.env.EMAIL_PEPPER || "dev-pepper-change-me";
-  return crypto.createHmac("sha256", pepper).update(normalized).digest("hex");
+const HANDLE_RE = /^[a-z0-9_]{3,24}$/;
+const RESERVED = new Set([
+  "admin", "administrator", "mod", "mods", "moderator",
+  "system", "anon", "anonymous", "deleted", "removed",
+  "root", "api", "support", "help", "hop",
+  "hookedonphotonics", "official",
+]);
+
+export function normalizeHandle(input: string): string {
+  return input.trim().toLowerCase();
 }
 
-export function hashCode(code: string): string {
-  return crypto.createHash("sha256").update(code).digest("hex");
-}
-
-export function generateCode(): string {
-  // 6-digit, leading zeros preserved
-  const n = crypto.randomInt(0, 1_000_000);
-  return n.toString().padStart(6, "0");
-}
-
-// ---- domain validation ----
-
-export async function isDomainAllowed(domain: string): Promise<boolean> {
-  if (!domain) return false;
-  if (isBlockedDomain(domain)) return false;
-  if (SEED_ALLOWED.includes(domain)) return true;
-  if (isEduDomain(domain)) return true;
-  const row = await prisma.allowedDomain.findUnique({ where: { domain } });
-  return !!row;
-}
-
-// ---- handle generation ----
-
-const ADJ = [
-  "shot", "tunable", "bandgap", "coherent", "stray", "dispersive",
-  "nonlinear", "single-mode", "polarized", "monolithic", "evanescent", "cladded",
-];
-const NOUN = [
-  "photon", "waveguide", "packet", "splitter", "fringe", "qubit",
-  "modulator", "resonator", "dimer", "speckle", "cavity", "etalon",
-];
-
-export function randomHandle(): string {
-  const a = ADJ[crypto.randomInt(0, ADJ.length)];
-  const n = NOUN[crypto.randomInt(0, NOUN.length)];
-  const tag = crypto.randomInt(100, 999);
-  return `${a}_${n}_${tag}`;
-}
-
-export async function createUniqueHandle(): Promise<string> {
-  for (let i = 0; i < 6; i++) {
-    const h = randomHandle();
-    const exists = await prisma.user.findUnique({ where: { handle: h } });
-    if (!exists) return h;
+export function handleOk(handle: string): { ok: boolean; reason?: string } {
+  if (!HANDLE_RE.test(handle)) {
+    return { ok: false, reason: "handles are 3–24 chars: a–z, 0–9, underscore" };
   }
-  return randomHandle() + "_" + crypto.randomInt(1000, 9999);
+  if (RESERVED.has(handle)) return { ok: false, reason: "that handle is reserved" };
+  return { ok: true };
 }
 
-export function emailOk(email: string): { ok: boolean; reason?: string; domain: string } {
-  const domain = domainOf(email);
-  if (!domain) return { ok: false, reason: "Invalid email", domain: "" };
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, reason: "Invalid email", domain };
-  if (isBlockedDomain(domain)) return { ok: false, reason: "Personal email providers aren't allowed. Use a work or .edu address.", domain };
-  return { ok: true, domain };
+export function passwordOk(password: string): { ok: boolean; reason?: string } {
+  if (password.length < 8) return { ok: false, reason: "password must be at least 8 characters" };
+  if (password.length > 200) return { ok: false, reason: "password too long" };
+  return { ok: true };
+}
+
+export async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 12);
+}
+
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  try { return await bcrypt.compare(password, hash); }
+  catch { return false; }
 }

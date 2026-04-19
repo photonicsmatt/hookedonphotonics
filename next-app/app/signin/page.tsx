@@ -1,43 +1,40 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+
+type Mode = "login" | "signup";
 
 export default function SignInPage() {
-  const [email, setEmail] = useState("");
-  const [code, setCode]   = useState("");
-  const [sent, setSent]   = useState(false);
-  const [dev, setDev]     = useState(false);
-  const [err, setErr]     = useState<string | null>(null);
-  const [busy, setBusy]   = useState(false);
   const router = useRouter();
+  const search = useSearchParams();
+  const next = search.get("next") ?? "/";
 
-  async function requestCode(e: React.FormEvent) {
+  const [mode, setMode]       = useState<Mode>("login");
+  const [handle, setHandle]   = useState("");
+  const [password, setPw]     = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [err, setErr]         = useState<string | null>(null);
+  const [busy, setBusy]       = useState(false);
+
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true); setErr(null);
-    const res = await fetch("/api/auth/request", {
+    setErr(null);
+
+    if (mode === "signup" && password !== confirm) {
+      setErr("passwords don't match"); return;
+    }
+
+    setBusy(true);
+    const res = await fetch(`/api/auth/${mode === "signup" ? "signup" : "login"}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ handle, password }),
     });
     setBusy(false);
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) { setErr(data.error ?? "Couldn't send code"); return; }
-    setSent(true); setDev(!!data.dev);
-  }
-
-  async function verify(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true); setErr(null);
-    const res = await fetch("/api/auth/verify", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ email, code }),
-    });
-    setBusy(false);
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) { setErr(data.error ?? "Invalid code"); return; }
-    router.push("/");
+    if (!res.ok) { setErr(data.error ?? "something went wrong"); return; }
+    router.push(next);
     router.refresh();
   }
 
@@ -46,65 +43,81 @@ export default function SignInPage() {
       <div style={{ maxWidth: 460, margin: "0 auto", width: "100%" }}>
         <div className="hero">
           <div className="crumb">// auth.sh</div>
-          <h1>sign in.</h1>
-          <p>Work or .edu email only. We hash it with a pepper — the raw address never touches the DB.</p>
+          <h1>{mode === "signup" ? "new account." : "sign in."}</h1>
+          <p>
+            {mode === "signup"
+              ? "Pick a handle. Don't use your real name. Don't use your work name."
+              : "Welcome back, anon."}
+          </p>
         </div>
 
-        <div className="post">
-          {!sent ? (
-            <form onSubmit={requestCode}>
-              <label className="small" style={{ display: "block", marginBottom: 6 }}>work email</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@yourcompany.com"
-                style={{ width: "100%", padding: 10, font: "inherit", border: "1px solid var(--line)" }}
-              />
-              {err && <p style={{ color: "var(--magenta)", marginTop: 10 }}>{err}</p>}
-              <div className="post-actions" style={{ marginTop: 14 }}>
-                <button className="chip primary" disabled={busy} type="submit">
-                  {busy ? "sending…" : "send one-time code"}
-                </button>
-              </div>
-            </form>
-          ) : (
-            <form onSubmit={verify}>
-              <p className="small">
-                sent a 6-digit code to <b>{email}</b>
-                {dev && <span style={{ color: "var(--magenta)" }}> — check server console (dev mode)</span>}
-              </p>
-              <input
-                inputMode="numeric"
-                pattern="\d{6}"
-                maxLength={6}
-                required
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                placeholder="000000"
-                style={{
-                  width: "100%",
-                  padding: 14,
-                  fontSize: 22,
-                  letterSpacing: 6,
-                  textAlign: "center",
-                  font: "inherit",
-                  fontFamily: "'VT323',monospace",
-                  border: "1px solid var(--line)",
-                }}
-              />
-              {err && <p style={{ color: "var(--magenta)", marginTop: 10 }}>{err}</p>}
-              <div className="post-actions" style={{ marginTop: 14 }}>
-                <button className="chip primary" disabled={busy} type="submit">
-                  {busy ? "verifying…" : "verify & sign in"}
-                </button>
-                <button className="chip" type="button" onClick={() => { setSent(false); setCode(""); }}>
-                  use different email
-                </button>
-              </div>
-            </form>
-          )}
+        <div className="auth-tabs">
+          <button
+            type="button"
+            className={`submit-tab ${mode === "login" ? "active" : ""}`}
+            onClick={() => { setMode("login"); setErr(null); }}
+          >sign in</button>
+          <button
+            type="button"
+            className={`submit-tab ${mode === "signup" ? "active" : ""}`}
+            onClick={() => { setMode("signup"); setErr(null); }}
+          >create account</button>
+        </div>
+
+        <div className="submit-box">
+          <form onSubmit={submit}>
+            <label className="field-label">handle</label>
+            <input
+              className="field"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              required
+              value={handle}
+              onChange={(e) => setHandle(e.target.value)}
+              placeholder="3–24 chars, a–z 0–9 _"
+              maxLength={24}
+            />
+
+            <label className="field-label" style={{ marginTop: 12 }}>password</label>
+            <input
+              className="field"
+              type="password"
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
+              required
+              value={password}
+              onChange={(e) => setPw(e.target.value)}
+              placeholder={mode === "signup" ? "at least 8 characters" : ""}
+              minLength={mode === "signup" ? 8 : 1}
+            />
+
+            {mode === "signup" && (
+              <>
+                <label className="field-label" style={{ marginTop: 12 }}>confirm password</label>
+                <input
+                  className="field"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                />
+                <p className="small" style={{ marginTop: 10, color: "var(--ink-soft)" }}>
+                  no email, no password recovery. write your password down somewhere safe.
+                </p>
+              </>
+            )}
+
+            {err && <p style={{ color: "var(--magenta)", marginTop: 12, fontSize: 13 }}>{err}</p>}
+
+            <div className="submit-actions">
+              <button className="chip primary" type="submit" disabled={busy}>
+                {busy
+                  ? (mode === "signup" ? "creating…" : "signing in…")
+                  : (mode === "signup" ? "create account" : "sign in")}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </main>
