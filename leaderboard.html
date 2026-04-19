@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Leaderboard — Hooked on Photonics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="logo" href="index.html">
+      <span class="hook">&gt;</span><span>HOOKED</span><span class="dot">.</span><span>ON</span><span class="dot">.</span><span>PHOTONICS</span>
+    </a>
+    <span class="tagline">industry gossip since <span style="color:var(--magenta)">2026</span></span>
+    <nav>
+      <a href="index.html">Feed</a>
+      <a href="channels.html">Channels</a>
+      <a href="leaderboard.html" class="active">Leaderboard</a>
+      <a href="about.html">About</a>
+      <a href="#" class="btn-login">Sign in</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap narrow">
+  <div class="hero">
+    <div class="crumb">// karma.sys</div>
+    <h1>the <span class="accent">leaderboard</span>.</h1>
+    <p>Karma earned from upvoted rumors, comp posts, and verified-flair contributions. Snitches get no points.</p>
+  </div>
+
+  <table class="leader-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>handle</th>
+        <th>flair</th>
+        <th>karma</th>
+        <th>streak</th>
+      </tr>
+    </thead>
+    <tbody id="leaderBody"></tbody>
+  </table>
+</main>
+
+<footer>
+  <div>© 2026 Hooked on Photonics</div>
+  <div class="glyphs">/\/\  ◇  &lt;&lt;&lt;  ◇  /\/\</div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>renderLeaderboard();</script>
+</body>
+</html>

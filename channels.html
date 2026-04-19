@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Channels — Hooked on Photonics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="logo" href="index.html">
+      <span class="hook">&gt;</span><span>HOOKED</span><span class="dot">.</span><span>ON</span><span class="dot">.</span><span>PHOTONICS</span>
+    </a>
+    <span class="tagline">industry gossip since <span style="color:var(--magenta)">2026</span></span>
+    <nav>
+      <a href="index.html">Feed</a>
+      <a href="channels.html" class="active">Channels</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="about.html">About</a>
+      <a href="#" class="btn-login">Sign in</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap narrow">
+  <div class="hero">
+    <div class="crumb">// directory</div>
+    <h1>channels.</h1>
+    <p>Pick your flavor of industry drama. Each channel has its own rules and mods.</p>
+  </div>
+
+  <div class="channels-grid" id="channelsGrid"></div>
+</main>
+
+<footer>
+  <div>© 2026 Hooked on Photonics</div>
+  <div class="glyphs">/\/\  ◇  &lt;&lt;&lt;  ◇  /\/\</div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>renderChannels();</script>
+</body>
+</html>

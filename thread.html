@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Thread — Hooked on Photonics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="logo" href="index.html">
+      <span class="hook">&gt;</span><span>HOOKED</span><span class="dot">.</span><span>ON</span><span class="dot">.</span><span>PHOTONICS</span>
+    </a>
+    <span class="tagline">industry gossip since <span style="color:var(--magenta)">2026</span></span>
+    <nav>
+      <a href="index.html">Feed</a>
+      <a href="channels.html">Channels</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="about.html">About</a>
+      <a href="#" class="btn-login">Sign in</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap narrow">
+  <div style="max-width: 820px; margin: 0 auto; width: 100%;">
+    <p class="small"><a href="index.html">← back to feed</a></p>
+    <article id="thread"></article>
+    <section class="comments" id="comments"></section>
+
+    <form class="reply-form" onsubmit="event.preventDefault(); alert('Post accepted (demo). Thanks for contributing, anon.'); this.reset();">
+      <h3 style="margin-top:0;font-family:'VT323',monospace;color:var(--magenta);font-size:24px">&gt; reply anonymously</h3>
+      <textarea placeholder="Keep it specific. Keep it anonymous. Don't name names."></textarea>
+      <div class="row">
+        <span>posting as <b style="color:var(--indigo)">anon_<span id="anonTag">xxxx</span></b></span>
+        <button class="chip primary" type="submit">post reply</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<footer>
+  <div>© 2026 Hooked on Photonics &nbsp;·&nbsp; <a href="about.html">rules</a></div>
+  <div class="glyphs">/\/\  ◇  &lt;&lt;&lt;  ◇  /\/\</div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>renderThread();</script>
+</body>
+</html>

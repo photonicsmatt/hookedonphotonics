@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hooked on Photonics — industry gossip for the lightpath crowd</title>
+<meta name="description" content="Anonymous industry gossip, comp threads, and hot takes from inside the photonics world." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%231a1a2e'/><text x='50%25' y='58%25' text-anchor='middle' font-family='Courier' font-size='22' fill='%23ffd84a' font-weight='bold'>H</text><circle cx='25' cy='8' r='3' fill='%23ff2e93'/></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="logo" href="index.html">
+      <span class="hook">&gt;</span><span>HOOKED</span><span class="dot">.</span><span>ON</span><span class="dot">.</span><span>PHOTONICS</span>
+    </a>
+    <span class="tagline">industry gossip since <span style="color:var(--magenta)">2026</span></span>
+    <nav>
+      <a href="index.html" class="active">Feed</a>
+      <a href="channels.html">Channels</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="about.html">About</a>
+      <a href="#" class="btn-login" id="loginBtn">Sign in</a>
+    </nav>
+  </div>
+</header>
+
+<div class="ticker">
+  <div class="ticker-track">
+    <span>📡 <b>RUMOR:</b> 1.6T ramp numbers softer than press says</span>
+    <span>💸 <b>COMP:</b> Principal offers averaging $248k base</span>
+    <span>🔥 <b>TRENDING:</b> #CPO is NOT dead</span>
+    <span>📉 <b>LAYOFFS:</b> Allentown "restructuring" rumor</span>
+    <span>🧪 <b>PDK LEAK:</b> 7nm SiPh node spotted in the wild</span>
+    <span>📈 <b>IPO WATCH:</b> tunable laser vendor, Q4?</span>
+  </div>
+</div>
+
+<main class="wrap">
+  <section>
+    <div class="hero">
+      <div class="crumb">// welcome back, anon</div>
+      <h1>the <span class="accent">unofficial</span> photonics watercooler.</h1>
+      <p>Post rumors, compare offers, vent about tapeouts. No recruiters. No PR teams. No LinkedIn influencers.</p>
+    </div>
+
+    <div class="notice">
+      <b>House rules:</b> keep it anonymous, keep it specific, keep it real. No named individuals. Mods don't play.
+    </div>
+
+    <div class="tabs" id="channelTabs">
+      <a class="tab active" href="#" data-channel="all">all</a>
+      <!-- channel tabs injected -->
+    </div>
+
+    <div class="thread-list" id="threadList"></div>
+  </section>
+
+  <aside class="side">
+    <div class="box">
+      <h3>&gt; new thread</h3>
+      <p class="small">Got something to say? Post it anonymously. No email required.</p>
+      <a class="chip primary" href="#" onclick="alert('Sign in to post. Just kidding — this is a demo.'); return false;">+ start a thread</a>
+    </div>
+
+    <div class="box">
+      <h3>&gt; trending tags</h3>
+      <div class="tags-cloud" id="tagCloud"></div>
+    </div>
+
+    <div class="box">
+      <h3>&gt; online now</h3>
+      <ul class="online-list" id="onlineList"></ul>
+    </div>
+
+    <div class="box center">
+      <h3 style="text-align:left">&gt; visitors</h3>
+      <div class="hit-counter" id="hitCounter">0008421</div>
+      <div class="small" style="margin-top:8px">since <span style="color:var(--magenta)">03/2026</span></div>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <div>© 2026 Hooked on Photonics &nbsp;·&nbsp; <a href="about.html">rules</a> &nbsp;·&nbsp; <a href="about.html">privacy</a> &nbsp;·&nbsp; <a href="#">contact a mod</a></div>
+  <div class="glyphs">/\/\  ◇  &lt;&lt;&lt;  ◇  /\/\</div>
+  <div class="small" style="margin-top:8px;opacity:0.6">best viewed in any browser made after 1997</div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>renderHome();</script>
+</body>
+</html>
