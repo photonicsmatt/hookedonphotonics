@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  handle    String    @unique
+  emailHash String    @unique
+  domain    String
+  flair     String    @default("Anon")
+  karma     Int       @default(0)
+  createdAt DateTime  @default(now())
+  threads   Thread[]
+  comments  Comment[]
+  votes     Vote[]
+
+  @@index([domain])
+}
+
+model Channel {
+  slug    String   @id
+  name    String
+  blurb   String
+  threads Thread[]
+}
+
+model Thread {
+  id          String    @id @default(cuid())
+  title       String
+  body        String
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  channelSlug String
+  channel     Channel   @relation(fields: [channelSlug], references: [slug])
+  tags        String[]  @default([])
+  upvotes     Int       @default(0)
+  downvotes   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  comments    Comment[]
+  votes       Vote[]
+  flaggedAt   DateTime?
+  removedAt   DateTime?
+
+  @@index([channelSlug, createdAt])
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  threadId  String
+  thread    Thread    @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id])
+  body      String
+  upvotes   Int       @default(0)
+  createdAt DateTime  @default(now())
+  removedAt DateTime?
+
+  @@index([threadId, createdAt])
+}
+
+model Vote {
+  userId    String
+  threadId  String
+  dir       Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@id([userId, threadId])
+}
+
+model LoginCode {
+  id         String    @id @default(cuid())
+  emailHash  String
+  codeHash   String
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime
+  consumedAt DateTime?
+  ip         String?
+
+  @@index([emailHash])
+}
+
+model AllowedDomain {
+  domain String  @id
+  note   String?
+}
