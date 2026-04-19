@@ -10,8 +10,8 @@ export default function Sidebar({ online }: { online: string[] }) {
     <aside className="side">
       <div className="box">
         <h3>&gt; new thread</h3>
-        <p className="small">Got something to say? Post it anonymously.</p>
-        <a className="chip primary" href="/?compose=1">+ start a thread</a>
+        <p className="small">Text, link, or image. Post anonymously.</p>
+        <a className="chip primary" href="/submit">+ start a thread</a>
       </div>
 
       <div className="box">

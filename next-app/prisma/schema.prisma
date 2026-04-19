@@ -29,10 +29,20 @@ model Channel {
   threads Thread[]
 }
 
+enum PostKind {
+  TEXT
+  LINK
+  IMAGE
+}
+
 model Thread {
   id          String    @id @default(cuid())
+  kind        PostKind  @default(TEXT)
   title       String
-  body        String
+  body        String    @default("")
+  linkUrl     String?
+  imageUrl    String?
+  imageAlt    String?
   authorId    String
   author      User      @relation(fields: [authorId], references: [id])
   channelSlug String

@@ -556,3 +556,199 @@ footer .glyphs {
 .small { font-size: 12px; color: var(--ink-soft); }
 .center { text-align: center; }
 hr.dotted { border: 0; border-top: 2px dotted var(--ink-soft); margin: 18px 0; }
+
+/* ---------- Submit form ---------- */
+.submit-form { margin-bottom: 24px; }
+
+.submit-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: -2px;
+  position: relative;
+  z-index: 1;
+}
+.submit-tab {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 10px 18px;
+  background: var(--bg-card);
+  color: var(--ink-soft);
+  border: var(--rule) solid var(--line);
+  border-right-width: 0;
+  cursor: pointer;
+  box-shadow: none;
+}
+.submit-tab:last-child { border-right-width: var(--rule); }
+.submit-tab:hover { background: var(--yellow); color: var(--ink); }
+.submit-tab.active {
+  background: var(--ink);
+  color: var(--yellow);
+}
+
+.submit-box {
+  background: var(--bg-card);
+  border: var(--rule) solid var(--line);
+  box-shadow: var(--shadow);
+  padding: 18px 20px;
+}
+
+.field-label {
+  display: block;
+  font-family: "VT323", monospace;
+  font-size: 18px;
+  color: var(--indigo);
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+.char-count {
+  float: right;
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.char-count.bad { color: var(--magenta); }
+
+.field {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+.field:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--yellow);
+}
+textarea.field { resize: vertical; }
+select.field { background: #fff; }
+
+.submit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--ink-soft);
+}
+.chip[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+/* ---------- Image drop + preview ---------- */
+.img-drop {
+  border: 2px dashed var(--ink-soft);
+  background: repeating-linear-gradient(
+    45deg,
+    #fff 0 10px,
+    var(--bg) 10px 20px
+  );
+  padding: 22px;
+  text-align: center;
+}
+.img-preview-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.img-preview {
+  max-width: 100%;
+  max-height: 320px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  background: #fff;
+}
+.img-full {
+  display: block;
+  max-width: 100%;
+  max-height: 640px;
+  margin: 8px 0 4px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  background: #fff;
+}
+.img-thumb {
+  width: 92px;
+  height: 92px;
+  object-fit: cover;
+  border-right: var(--rule) solid var(--line);
+  display: block;
+  background: #fff;
+}
+.thumb-link { display: block; align-self: stretch; }
+.thread { grid-template-columns: 64px auto 1fr; }
+.thread .thread-body { grid-column: 3; }
+.thread > .votes { grid-column: 1; }
+/* When there's no image thumb the body spans columns 2+3 */
+.thread:not(:has(.thumb-link)) { grid-template-columns: 64px 1fr; }
+.thread:not(:has(.thumb-link)) .thread-body { grid-column: 2; }
+
+/* ---------- Link card / inline ---------- */
+.link-inline {
+  display: inline-block;
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  background: var(--cyan);
+  color: #001a2f;
+  border: 1px solid var(--line);
+  padding: 1px 8px;
+  text-decoration: none;
+  margin: 2px 0 6px;
+  box-shadow: var(--shadow-sm);
+}
+.link-inline:hover { background: var(--yellow); color: var(--ink); }
+
+.link-card {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: var(--ink);
+  margin: 10px 0;
+}
+.link-card:hover { background: var(--yellow); }
+.link-favicon {
+  font-size: 26px;
+  line-height: 1;
+  display: inline-block;
+  text-align: center;
+}
+.link-domain {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--indigo);
+}
+.link-url { word-break: break-all; }
+
+.link-preview {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px dashed var(--ink-soft);
+  font-size: 13px;
+}
+
+/* ---------- Kind badges ---------- */
+.kind-badge {
+  display: inline-block;
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  text-transform: uppercase;
+  background: var(--bg);
+  color: var(--ink);
+}
+.kind-badge.link  { background: var(--cyan); color: #001a2f; }
+.kind-badge.image { background: var(--magenta); color: #fff; }
+.kind-badge.text  { background: var(--yellow); color: var(--ink); }
+

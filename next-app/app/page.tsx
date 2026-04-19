@@ -1,5 +1,5 @@
+import Link from "next/link";
 import ChannelTabs from "@/components/ChannelTabs";
-import NewThreadForm from "@/components/NewThreadForm";
 import Sidebar from "@/components/Sidebar";
 import ThreadCard from "@/components/ThreadCard";
 import { currentUser } from "@/lib/auth";
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: { channel?: string; compose?: string };
+  searchParams: { channel?: string };
 }) {
   const channel = searchParams.channel;
   const user = await currentUser();
@@ -32,16 +32,15 @@ export default async function HomePage({
           <b>House rules:</b> keep it anonymous, keep it specific, keep it real. No named individuals. Mods don&apos;t play.
         </div>
 
-        <ChannelTabs
-          channels={channels.map((c) => ({ slug: c.slug, name: c.name }))}
-          active={channel ?? "all"}
-        />
-
-        {searchParams.compose === "1" && user ? (
-          <div style={{ marginBottom: 18 }}>
-            <NewThreadForm channels={channels.map((c) => ({ slug: c.slug, name: c.name }))} />
-          </div>
-        ) : null}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, gap: 10, flexWrap: "wrap" }}>
+          <ChannelTabs
+            channels={channels.map((c) => ({ slug: c.slug, name: c.name }))}
+            active={channel ?? "all"}
+          />
+          <Link className="chip primary" href={channel ? `/submit?channel=${channel}` : "/submit"}>
+            + new post
+          </Link>
+        </div>
 
         <div className="thread-list">
           {threads.length === 0 ? (
@@ -51,8 +50,12 @@ export default async function HomePage({
               <ThreadCard
                 key={t.id}
                 id={t.id}
+                kind={t.kind}
                 title={t.title}
                 body={t.body}
+                linkUrl={t.linkUrl}
+                imageUrl={t.imageUrl}
+                imageAlt={t.imageAlt}
                 authorHandle={t.author.handle}
                 authorFlair={t.author.flair}
                 channelName={t.channel.name}

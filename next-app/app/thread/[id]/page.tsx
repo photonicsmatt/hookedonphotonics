@@ -14,6 +14,11 @@ function timeAgo(d: Date) {
   return d.toLocaleDateString();
 }
 
+function domainOf(u: string) {
+  try { return new URL(u).hostname.replace(/^www\./, ""); }
+  catch { return "link"; }
+}
+
 export default async function ThreadPage({ params }: { params: { id: string } }) {
   const [thread, user] = await Promise.all([getThread(params.id), currentUser()]);
   if (!thread) notFound();
@@ -30,11 +35,42 @@ export default async function ThreadPage({ params }: { params: { id: string } })
           <div style={{ padding: "18px 22px" }}>
             <div className="post-meta">
               <span style={{ color: "var(--magenta)", fontWeight: 700 }}>{thread.channel.name}</span>
-              &nbsp;· anon:{thread.author.handle} <span className={flairClass}>{thread.author.flair}</span>
-              &nbsp;· {timeAgo(thread.createdAt)}
+              {" "}· anon:{thread.author.handle} <span className={flairClass}>{thread.author.flair}</span>
+              {" "}· {timeAgo(thread.createdAt)}
+              {" "}· <span className={`kind-badge ${thread.kind.toLowerCase()}`}>
+                {thread.kind === "LINK" ? "◎ link" : thread.kind === "IMAGE" ? "▦ image" : "▤ text"}
+              </span>
             </div>
             <h2>{thread.title}</h2>
-            <div className="body">{thread.body}</div>
+
+            {thread.kind === "LINK" && thread.linkUrl ? (
+              <a
+                className="link-card"
+                href={thread.linkUrl}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+              >
+                <span className="link-favicon" aria-hidden>🔗</span>
+                <div>
+                  <div className="link-domain">{domainOf(thread.linkUrl)} ↗</div>
+                  <div className="link-url small">{thread.linkUrl}</div>
+                </div>
+              </a>
+            ) : null}
+
+            {thread.kind === "IMAGE" && thread.imageUrl ? (
+              <a href={thread.imageUrl} target="_blank" rel="noopener noreferrer">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={thread.imageUrl}
+                  alt={thread.imageAlt ?? thread.title}
+                  className="img-full"
+                />
+              </a>
+            ) : null}
+
+            {thread.body && <div className="body" style={{ marginTop: 12 }}>{thread.body}</div>}
+
             {thread.tags.length > 0 && (
               <div className="thread-footer" style={{ marginTop: 10 }}>
                 {thread.tags.map((t) => <span className="tag" key={t}>#{t}</span>)}
@@ -55,8 +91,8 @@ export default async function ThreadPage({ params }: { params: { id: string } })
                   <div className="cmeta">
                     <span className="handle">{c.author.handle}</span>{" "}
                     <span className={cf}>{c.author.flair}</span>
-                    &nbsp;· {timeAgo(c.createdAt)}
-                    &nbsp;· <span style={{ color: "var(--magenta)" }}>+{c.upvotes}</span>
+                    {" "}· {timeAgo(c.createdAt)}
+                    {" "}· <span style={{ color: "var(--magenta)" }}>+{c.upvotes}</span>
                   </div>
                   <div className="cbody">{c.body}</div>
                 </div>

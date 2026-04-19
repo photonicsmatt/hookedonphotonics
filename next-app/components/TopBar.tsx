@@ -20,6 +20,7 @@ export default function TopBar({ handle }: { handle: string | null }) {
           <Link href="/about">About</Link>
           {handle ? (
             <>
+              <Link href="/submit" className="btn-login">+ Post</Link>
               <span style={{ color: "#ffd84a", fontSize: 12, marginLeft: 6 }}>
                 anon: <b>{handle}</b>
               </span>
