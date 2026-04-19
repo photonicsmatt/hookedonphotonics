@@ -28,7 +28,27 @@ export async function getSession(): Promise<IronSession<Session>> {
 export async function currentUser() {
   const session = await getSession();
   if (!session.userId) return null;
-  return prisma.user.findUnique({ where: { id: session.userId } });
+  const user = await prisma.user.findUnique({ where: { id: session.userId } });
+  if (!user) return null;
+  if (user.bannedAt) {
+    // Banned users shouldn't carry a live session.
+    session.destroy();
+    return null;
+  }
+  return user;
+}
+
+export async function requireMod() {
+  const user = await currentUser();
+  if (!user) return { user: null as const, ok: false as const, status: 401 as const };
+  if (user.role !== "MOD" && user.role !== "ADMIN") {
+    return { user, ok: false as const, status: 403 as const };
+  }
+  return { user, ok: true as const, status: 200 as const };
+}
+
+export function isMod(user: { role: string } | null | undefined): boolean {
+  return !!user && (user.role === "MOD" || user.role === "ADMIN");
 }
 
 // ---- hashing helpers ----

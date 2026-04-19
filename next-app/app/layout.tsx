@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import TopBar from "@/components/TopBar";
 import Ticker from "@/components/Ticker";
-import { currentUser } from "@/lib/auth";
+import { currentUser, isMod } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Hooked on Photonics — industry gossip for the lightpath crowd",
@@ -22,7 +22,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body>
-        <TopBar handle={user?.handle ?? null} />
+        <TopBar handle={user?.handle ?? null} isMod={isMod(user)} />
         <Ticker />
         {children}
         <footer>

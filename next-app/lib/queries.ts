@@ -18,16 +18,15 @@ export async function listThreads(opts: { channelSlug?: string; limit?: number }
   });
 }
 
-export async function getThread(id: string) {
+export async function getThread(id: string, opts: { includeRemoved?: boolean } = {}) {
   return prisma.thread.findFirst({
-    where: { id, removedAt: null },
+    where: opts.includeRemoved ? { id } : { id, removedAt: null },
     include: {
-      author: { select: { handle: true, flair: true } },
+      author: { select: { id: true, handle: true, flair: true, bannedAt: true } },
       channel: { select: { slug: true, name: true } },
       comments: {
-        where: { removedAt: null },
         orderBy: { createdAt: "asc" },
-        include: { author: { select: { handle: true, flair: true } } },
+        include: { author: { select: { id: true, handle: true, flair: true, bannedAt: true } } },
       },
     },
   });
@@ -46,4 +45,44 @@ export async function topLeaders(limit = 20) {
     take: limit,
     select: { handle: true, flair: true, karma: true, createdAt: true },
   });
+}
+
+export async function openFlags() {
+  return prisma.flag.findMany({
+    where: { resolvedAt: null },
+    orderBy: { createdAt: "desc" },
+    take: 100,
+    include: {
+      reporter: { select: { id: true, handle: true } },
+      thread: {
+        include: {
+          author: { select: { id: true, handle: true, flair: true, bannedAt: true } },
+          channel: { select: { slug: true, name: true } },
+        },
+      },
+      comment: {
+        include: {
+          author: { select: { id: true, handle: true, flair: true, bannedAt: true } },
+          thread: { select: { id: true, title: true, channelSlug: true } },
+        },
+      },
+    },
+  });
+}
+
+export async function recentModActions(limit = 50) {
+  return prisma.modAction.findMany({
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    include: { actor: { select: { handle: true } } },
+  });
+}
+
+export async function modCounts() {
+  const [openFlagCount, removedThreads, removedComments] = await Promise.all([
+    prisma.flag.count({ where: { resolvedAt: null } }),
+    prisma.thread.count({ where: { removedAt: { not: null } } }),
+    prisma.comment.count({ where: { removedAt: { not: null } } }),
+  ]);
+  return { openFlagCount, removedThreads, removedComments };
 }

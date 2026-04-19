@@ -1,7 +1,13 @@
 import Link from "next/link";
 import SignOutButton from "./SignOutButton";
 
-export default function TopBar({ handle }: { handle: string | null }) {
+export default function TopBar({
+  handle,
+  isMod = false,
+}: {
+  handle: string | null;
+  isMod?: boolean;
+}) {
   return (
     <header className="topbar">
       <div className="topbar-inner">
@@ -18,6 +24,7 @@ export default function TopBar({ handle }: { handle: string | null }) {
           <Link href="/channels">Channels</Link>
           <Link href="/leaderboard">Leaderboard</Link>
           <Link href="/about">About</Link>
+          {isMod && <Link href="/mod" className="mod-link">Mod</Link>}
           {handle ? (
             <>
               <Link href="/submit" className="btn-login">+ Post</Link>

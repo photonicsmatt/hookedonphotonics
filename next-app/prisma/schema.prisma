@@ -7,19 +7,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  MOD
+  ADMIN
+}
+
 model User {
-  id        String    @id @default(cuid())
-  handle    String    @unique
-  emailHash String    @unique
-  domain    String
-  flair     String    @default("Anon")
-  karma     Int       @default(0)
-  createdAt DateTime  @default(now())
-  threads   Thread[]
-  comments  Comment[]
-  votes     Vote[]
+  id          String      @id @default(cuid())
+  handle      String      @unique
+  emailHash   String      @unique
+  domain      String
+  flair       String      @default("Anon")
+  karma       Int         @default(0)
+  role        Role        @default(USER)
+  bannedAt    DateTime?
+  banReason   String?
+  createdAt   DateTime    @default(now())
+  threads     Thread[]
+  comments    Comment[]
+  votes       Vote[]
+  flags       Flag[]      @relation("reports")
+  resolutions Flag[]      @relation("resolutions")
+  modActions  ModAction[] @relation("actions")
 
   @@index([domain])
+  @@index([role])
 }
 
 model Channel {
@@ -36,41 +49,49 @@ enum PostKind {
 }
 
 model Thread {
-  id          String    @id @default(cuid())
-  kind        PostKind  @default(TEXT)
-  title       String
-  body        String    @default("")
-  linkUrl     String?
-  imageUrl    String?
-  imageAlt    String?
-  authorId    String
-  author      User      @relation(fields: [authorId], references: [id])
-  channelSlug String
-  channel     Channel   @relation(fields: [channelSlug], references: [slug])
-  tags        String[]  @default([])
-  upvotes     Int       @default(0)
-  downvotes   Int       @default(0)
-  createdAt   DateTime  @default(now())
-  comments    Comment[]
-  votes       Vote[]
-  flaggedAt   DateTime?
-  removedAt   DateTime?
+  id            String    @id @default(cuid())
+  kind          PostKind  @default(TEXT)
+  title         String
+  body          String    @default("")
+  linkUrl       String?
+  imageUrl      String?
+  imageAlt      String?
+  authorId      String
+  author        User      @relation(fields: [authorId], references: [id])
+  channelSlug   String
+  channel       Channel   @relation(fields: [channelSlug], references: [slug])
+  tags          String[]  @default([])
+  upvotes       Int       @default(0)
+  downvotes     Int       @default(0)
+  createdAt     DateTime  @default(now())
+  comments      Comment[]
+  votes         Vote[]
+  flags         Flag[]
+  flaggedAt     DateTime?
+  removedAt     DateTime?
+  removalReason String?
 
   @@index([channelSlug, createdAt])
+  @@index([flaggedAt])
+  @@index([removedAt])
 }
 
 model Comment {
-  id        String    @id @default(cuid())
-  threadId  String
-  thread    Thread    @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  authorId  String
-  author    User      @relation(fields: [authorId], references: [id])
-  body      String
-  upvotes   Int       @default(0)
-  createdAt DateTime  @default(now())
-  removedAt DateTime?
+  id            String    @id @default(cuid())
+  threadId      String
+  thread        Thread    @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorId      String
+  author        User      @relation(fields: [authorId], references: [id])
+  body          String
+  upvotes       Int       @default(0)
+  createdAt     DateTime  @default(now())
+  flags         Flag[]
+  flaggedAt     DateTime?
+  removedAt     DateTime?
+  removalReason String?
 
   @@index([threadId, createdAt])
+  @@index([flaggedAt])
 }
 
 model Vote {
@@ -99,4 +120,53 @@ model LoginCode {
 model AllowedDomain {
   domain String  @id
   note   String?
+}
+
+model Flag {
+  id           String    @id @default(cuid())
+  reporterId   String
+  reporter     User      @relation("reports", fields: [reporterId], references: [id])
+  threadId     String?
+  thread       Thread?   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  commentId    String?
+  comment      Comment?  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  reason       String
+  note         String?
+  createdAt    DateTime  @default(now())
+  resolvedAt   DateTime?
+  resolvedById String?
+  resolvedBy   User?     @relation("resolutions", fields: [resolvedById], references: [id])
+  resolution   String?
+
+  @@index([resolvedAt])
+  @@index([threadId])
+  @@index([commentId])
+  @@index([reporterId, createdAt])
+}
+
+enum ModActionKind {
+  REMOVE_THREAD
+  RESTORE_THREAD
+  REMOVE_COMMENT
+  RESTORE_COMMENT
+  DISMISS_FLAG
+  BAN_USER
+  UNBAN_USER
+  PROMOTE_USER
+  DEMOTE_USER
+}
+
+model ModAction {
+  id        String        @id @default(cuid())
+  actorId   String
+  actor     User          @relation("actions", fields: [actorId], references: [id])
+  kind      ModActionKind
+  threadId  String?
+  commentId String?
+  userId    String?
+  note      String?
+  createdAt DateTime      @default(now())
+
+  @@index([createdAt])
+  @@index([actorId, createdAt])
 }
